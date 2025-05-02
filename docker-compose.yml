@@ -1,12 +1,14 @@
 version: '3.9'
 
 services:
-  web:
+  archedu:
     build: .
+    environment:
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
     restart: always
     volumes:
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - ./config/staticfiles:/app/config/staticfiles
+      - ./config/media:/app/config/media
     ports:
       - "8000:8000"
     env_file:
@@ -15,6 +17,9 @@ services:
       - db
     command: >
       sh -c "
+        python manage.py makemigrations authentication &&
+        python manage.py makemigrations education &&
+        python manage.py makemigrations payment &&
         python manage.py migrate &&
         python manage.py collectstatic --noinput &&
         gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4
@@ -39,14 +44,11 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/generate_conf.sh:/docker-entrypoint.d/generate_conf.sh
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
+      - ./config/staticfiles:/app/config/staticfiles
+      - ./config/media:/app/config/media
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
-      - ./certbot/www:/var/www/certbot  # shared volume for ACME challenges
-    environment:
-      - DOMAIN=${DOMAIN}
+      - ./certbot/www:/var/www/certbot
 
   certbot:
     image: certbot/certbot
@@ -58,8 +60,38 @@ services:
     entrypoint: "/bin/sh -c"
     command: >
       "certbot certonly --webroot -w /var/www/certbot
-      --email ${EMAIL} --agree-tos --no-eff-email
-      -d ${DOMAIN} -d www.${DOMAIN} --non-interactive"
+      --email www.edvent.uz@gmail.com --agree-tos --no-eff-email
+      -d archedu.uz -d www.archedu.uz --non-interactive"
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+
+  celery:
+    build: .
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - archedu
+
+  celery-beat:
+    build: .
+    command: celery -A config beat --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - archedu
 
 volumes:
   static_volume:

@@ -3,7 +3,7 @@ from .base import *
 DEBUG = False
 
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
+ALLOWED_HOSTS = config("ALLOWED_HOSTS").split(" ")
 
 DATABASES = {
     "default": {
@@ -16,6 +16,7 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
-MEDIA_ROOT = BASE_DIR / "media"
+STATIC_ROOT = BASE_DIR / "config/staticfiles"
+STATIC_URL = '/static/'
+MEDIA_ROOT = BASE_DIR / "config/media"
 STATICFILES_DIRS = [BASE_DIR / "static"]

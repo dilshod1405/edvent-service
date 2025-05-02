@@ -85,3 +85,4 @@ class FoundationCourseAdmin(admin.ModelAdmin):
 class VideoAdmin(admin.ModelAdmin):
     list_display = ('title', 'id')
     search_fields = ('title',)
+    ordering = ('id',)
