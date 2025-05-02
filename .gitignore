@@ -64,3 +64,6 @@ var/lib/letsencrypt/
 
 # Nginx and certbot temp files
 nginx/*.sh
+
+venv
+.venv
