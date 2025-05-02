@@ -67,3 +67,4 @@ nginx/*.sh
 
 venv
 .venv
+venv/
