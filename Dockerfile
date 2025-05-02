@@ -18,7 +18,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # # Copy .env file for environment variables (if needed by django-decouple)
-# COPY .env .env
+COPY .env .env
 
 # Collect static files
 RUN python manage.py collectstatic --noinput

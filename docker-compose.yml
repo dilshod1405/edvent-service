@@ -4,7 +4,7 @@ services:
   archedu:
     build: .
     environment:
-      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+      - DJANGO_SETTINGS_MODULE=config.settings.production
     restart: always
     volumes:
       - ./config/staticfiles:/app/config/staticfiles
