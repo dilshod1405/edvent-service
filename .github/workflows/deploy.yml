@@ -25,6 +25,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up .env file from GitHub Secret
+        run: echo "${{ secrets.ENV_FILE }}" > .env
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
