@@ -7,8 +7,8 @@ services:
       - DJANGO_SETTINGS_MODULE=config.settings.production
     restart: always
     volumes:
-      - ./staticfiles:/app/config/staticfiles
-      - ./media:/app/config/media
+      - ./config/staticfiles:/app/config/staticfiles
+      - ./config/media:/app/config/media
     ports:
       - "8000:8000"
     env_file:
@@ -42,8 +42,6 @@ services:
       - ./nginx/conf.d/archedu.conf:/etc/nginx/conf.d/archedu.conf
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot
-      - ./staticfiles:/app/config/staticfiles
-      - ./media:/app/config/media
     ports:
       - "80:80"
       - "443:443"
