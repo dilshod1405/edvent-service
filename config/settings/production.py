@@ -18,4 +18,3 @@ DATABASES = {
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = '/static/'
 MEDIA_ROOT = BASE_DIR / "media"
-STATICFILES_DIRS = [BASE_DIR / "static"]
