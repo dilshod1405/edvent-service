@@ -24,6 +24,7 @@ services:
         python manage.py collectstatic --noinput &&
         gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4
       "
+    
 
   db:
     image: postgres:15
@@ -37,19 +38,15 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: nginx
-    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/html:/usr/share/nginx/html
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./config/staticfiles:/app/config/staticfiles
-      - ./config/media:/app/config/media
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - ./certbot/www:/var/www/certbot
-
 
   certbot:
     image: certbot/certbot
@@ -88,6 +85,8 @@ services:
     command: celery -A config beat --loglevel=info
     volumes:
       - .:/app
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
     env_file:
       - .env
     depends_on:
