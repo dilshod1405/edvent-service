@@ -15,7 +15,6 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = BASE_DIR / "config/staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = '/static/'
-MEDIA_ROOT = BASE_DIR / "config/media"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+MEDIA_ROOT = BASE_DIR / "media"
