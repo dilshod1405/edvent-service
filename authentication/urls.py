@@ -8,5 +8,5 @@ urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
     path('activate/<uidb64>/<token>/', activate, name='activate'),
     path("login/", LoginView.as_view(), name="login"),
-    path("user-detail/", UserDetailView.as_view(), name="user-detail"),
+    path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),
 ]
