@@ -1,3 +1,4 @@
+from decouple import config
 from .base import *
 from pathlib import Path
 
