@@ -162,6 +162,7 @@ SIMPLE_JWT = {
 EMAIL_BACKEND = config("EMAIL_BACKEND")
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # EMAIL_HOST = config("EMAIL_HOST")
+
 # EMAIL_PORT = config("EMAIL_PORT", cast=int)
 # EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)
 # EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False)
