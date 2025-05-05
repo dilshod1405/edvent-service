@@ -13,14 +13,8 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
-# Copy project
+# Copy project files
 COPY . .
-
-# Copy .env file for environment variables
-COPY .env .env
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
 
 # Expose port
 EXPOSE 8000
