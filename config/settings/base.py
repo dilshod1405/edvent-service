@@ -159,20 +159,16 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
-EMAIL_BACKEND = config("EMAIL_BACKEND")
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_HOST = config("EMAIL_HOST")
 
-# EMAIL_PORT = config("EMAIL_PORT", cast=int)
-# EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)
-# EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False)
-# EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
 AWS_REGION_NAME = config("AWS_REGION_NAME")
 AWS_SES_REGION_ENDPOINT = config("AWS_SES_REGION_ENDPOINT")
+DEFAULT_FROM_EMAIL = 'www.edvent.uz@gmail.com'
 
 AUTH_USER_MODEL = "authentication.User"
 

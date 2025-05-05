@@ -20,4 +20,4 @@ class UserAdmin(BaseUserAdmin):
 
     search_fields = ('username', 'email', 'role')
     ordering = ['id']
-    list_editable = ('is_active', 'role',  )
+    list_editable = ('is_active', 'role',  'is_verified')
