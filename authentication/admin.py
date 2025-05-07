@@ -5,7 +5,7 @@ from .models import User
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     # Display in list view
-    list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_active', 'is_verified','id',)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_active', 'is_verified','id', 'telegram_id')
     list_filter = ('role', 'is_active', 'is_staff', 'is_superuser')
     
 
@@ -18,6 +18,6 @@ class UserAdmin(BaseUserAdmin):
         ('Additional Info', {'fields': ('role', 'photo')}),
     )
 
-    search_fields = ('username', 'email', 'role')
+    search_fields = ('username', 'email', 'role', 'telegram_id')
     ordering = ['id']
     list_editable = ('is_active', 'role',  'is_verified')

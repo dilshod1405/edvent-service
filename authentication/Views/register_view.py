@@ -18,3 +18,4 @@ class RegisterView(generics.CreateAPIView):
 
         # Send activation email
         send_activation_email.delay(user.email, user.username, activation_link)
+    

@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.models import BaseUserManager
 
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
         if not email:
@@ -33,6 +32,7 @@ class User(AbstractUser):
     photo = models.ImageField(upload_to='user_photos/', blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    telegram_id = models.BigIntegerField(null=True, blank=True)
     
     objects = CustomUserManager()
     
