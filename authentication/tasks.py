@@ -2,7 +2,7 @@ from celery import shared_task
 from django.core.mail import send_mail
 from django.conf import settings
 
-VERIFIED_FROM_EMAIL = settings.EMAIL_HOST_USER
+VERIFIED_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
 
 @shared_task
 def send_activation_email(email, username, activation_link):
@@ -37,5 +37,3 @@ def successful_registration_email(email, username):
         recipient_list=[email],
         fail_silently=False,
     )
-
-

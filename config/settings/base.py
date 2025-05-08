@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", cast=bool, default=False)
+DEBUG = True 
 
 
 # Application definition
@@ -160,25 +160,24 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+AWS_REGION_NAME = config("AWS_REGION_NAME")
+AWS_SES_REGION_ENDPOINT = config("AWS_SES_REGION_ENDPOINT")
+DEFAULT_FROM_EMAIL = 'www.edvent.uz@gmail.com'
+
+EMAIL_BACKEND = 'django_ses.SESBackend'
+EMAIL_HOST = AWS_SES_REGION_ENDPOINT
+EMAIL_HOST_USER = config("AWS_ACCESS_KEY_ID")
+EMAIL_HOST_PASSWORD = config("AWS_SECRET_ACCESS_KEY")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
-# AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-# AWS_REGION_NAME = config("AWS_REGION_NAME")
-# AWS_SES_REGION_ENDPOINT = config("AWS_SES_REGION_ENDPOINT")
-# DEFAULT_FROM_EMAIL = 'www.edvent.uz@gmail.com'
-
 AUTH_USER_MODEL = "authentication.User"
 
-CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='redis://redis:6379/0')
-CELERY_RESULT_BACKEND = config('CELERY_RESULT_BACKEND', default='redis://redis:6379/0')
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
-# Google Auth (Allauth)
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
