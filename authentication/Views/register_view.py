@@ -17,5 +17,5 @@ class RegisterView(generics.CreateAPIView):
         activation_link = f"https://{current_site.domain}/authentication/activate/{uid}/{token}/"
 
         # Send activation email
-        send_activation_email.delay(user.email, user.username, activation_link)
+        send_activation_email.delay(user.email, user.username, user.first_name, user.last_name, activation_link)
     

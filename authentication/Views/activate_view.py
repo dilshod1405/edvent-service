@@ -19,7 +19,7 @@ def activate(request, uidb64, token):
             user.save()
             messages.success(request, "Profilingiz muvaffaqiyatli ro'yhatdan o'tdi va aktivlashtirildi.")
             # Send successful registration email
-            successful_registration_email.delay(user.email, user.username)
+            successful_registration_email.delay(user.email, user.username, user.first_name, user.last_name)
             # Redirect to the frontend login page
             frontend_login_url = f"https://edvent.uz/signin"
             return redirect(frontend_login_url)  
