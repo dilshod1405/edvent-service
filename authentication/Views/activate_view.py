@@ -4,6 +4,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import Http404
+from authentication.tasks import successful_registration_email
 
 def activate(request, uidb64, token):
     try:
@@ -17,7 +18,8 @@ def activate(request, uidb64, token):
             user.is_verified = True
             user.save()
             messages.success(request, "Profilingiz muvaffaqiyatli ro'yhatdan o'tdi va aktivlashtirildi.")
-            
+            # Send successful registration email
+            successful_registration_email.delay(user.email, user.username)
             # Redirect to the frontend login page
             frontend_login_url = f"https://edvent.uz/signin"
             return redirect(frontend_login_url)  
