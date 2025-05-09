@@ -1,13 +1,11 @@
+import requests
 from celery import shared_task
-import boto3
 from django.conf import settings
 
-VERIFIED_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
-AWS_REGION = settings.AWS_REGION_NAME
+RESEND_API_URL = settings.RESEND_SENDER_EMAIL
+API_KEY = settings.RESEND_API_KEY
 
-# boto3 SES client yaratamiz
-ses_client = boto3.client('ses', region_name=AWS_REGION)
-
+# Email yuborish uchun Celery task
 @shared_task
 def send_activation_email(email, username, first_name, last_name, activation_link):
     subject = 'Edvent.uz - Profilingizni aktivlashtiring'
@@ -58,29 +56,37 @@ def send_activation_email(email, username, first_name, last_name, activation_lin
     </html>
     """
 
+    # Email yuborish uchun resend API chaqiruvini yuboramiz
     try:
-        ses_client.send_email(
-            Source=VERIFIED_FROM_EMAIL,
-            Destination={'ToAddresses': [email]},
-            Message={
-                'Subject': {'Data': subject, 'Charset': 'UTF-8'},
-                'Body': {
-                    'Text': {'Data': body_text, 'Charset': 'UTF-8'},
-                    'Html': {'Data': body_html, 'Charset': 'UTF-8'}
-                }
+        response = requests.post(
+            RESEND_API_URL,
+            json={
+                "from": settings.DEFAULT_FROM_EMAIL,
+                "to": [email],
+                "subject": subject,
+                "html": body_html,
+                "text": body_text,
+            },
+            headers={
+                "Authorization": f"Bearer {API_KEY}"
             }
         )
-    except Exception as e:
+
+        # API javobini tekshirish
+        if response.status_code == 200:
+            print("Email muvaffaqiyatli yuborildi")
+        else:
+            print(f"Email yuborishda xatolik: {response.status_code}, {response.text}")
+    
+    except requests.exceptions.RequestException as e:
         print(f"Email yuborishda xatolik: {e}")
-
-
 
 @shared_task
 def successful_registration_email(email, username, first_name, last_name):
     subject = 'Edvent.uz - Muvaffaqiyatli ro‘yxatdan o‘tganingiz bilan!'
 
     body_text = ""
-    
+
     logo_url = "https://archedu.uz/static/e.png"
 
     body_html = f"""
@@ -129,16 +135,24 @@ def successful_registration_email(email, username, first_name, last_name):
     """
 
     try:
-        ses_client.send_email(
-            Source=VERIFIED_FROM_EMAIL,
-            Destination={'ToAddresses': [email]},
-            Message={
-                'Subject': {'Data': subject, 'Charset': 'UTF-8'},
-                'Body': {
-                    'Text': {'Data': body_text, 'Charset': 'UTF-8'},
-                    'Html': {'Data': body_html, 'Charset': 'UTF-8'}
-                }
+        response = requests.post(
+            RESEND_API_URL,
+            json={
+                "from": settings.DEFAULT_FROM_EMAIL,
+                "to": [email],
+                "subject": subject,
+                "html": body_html,
+                "text": body_text,
+            },
+            headers={
+                "Authorization": f"Bearer {API_KEY}"
             }
         )
-    except Exception as e:
+
+        if response.status_code == 200:
+            print("Email muvaffaqiyatli yuborildi")
+        else:
+            print(f"Email yuborishda xatolik: {response.status_code}, {response.text}")
+    
+    except requests.exceptions.RequestException as e:
         print(f"Email yuborishda xatolik: {e}")
