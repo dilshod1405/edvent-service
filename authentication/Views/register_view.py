@@ -4,7 +4,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
-from authentication.tasks import send_activation_email
+from authentication.tasks.send_activation_email import send_activation_email
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
