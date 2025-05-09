@@ -20,7 +20,7 @@ def send_activation_email(email, username, first_name, last_name, activation_lin
         <table align="center" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: auto; padding: 40px 0;">
           <tr>
             <td style="text-align: center; padding-bottom: 20px;">
-              <img src="{logo_url}" alt="Edvent Logo" width="80" style="border-radius: 8px;" />
+              <img src="{logo_url}" alt="Edvent Logo" width="150" />
             </td>
           </tr>
           <tr>
