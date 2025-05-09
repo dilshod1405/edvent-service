@@ -2,7 +2,8 @@ import requests
 from celery import shared_task
 from django.conf import settings
 
-RESEND_API_URL = settings.RESEND_SENDER_EMAIL
+RESEND_API_URL = "https://api.resend.com/emails"
+SENDER_EMAIL = settings.RESEND_SENDER_EMAIL
 API_KEY = settings.RESEND_API_KEY
 
 # Email yuborish uchun Celery task
@@ -61,7 +62,7 @@ def send_activation_email(email, username, first_name, last_name, activation_lin
         response = requests.post(
             RESEND_API_URL,
             json={
-                "from": settings.DEFAULT_FROM_EMAIL,
+                "from": SENDER_EMAIL,
                 "to": [email],
                 "subject": subject,
                 "html": body_html,
@@ -138,7 +139,7 @@ def successful_registration_email(email, username, first_name, last_name):
         response = requests.post(
             RESEND_API_URL,
             json={
-                "from": settings.DEFAULT_FROM_EMAIL,
+                "from": SENDER_EMAIL,
                 "to": [email],
                 "subject": subject,
                 "html": body_html,
