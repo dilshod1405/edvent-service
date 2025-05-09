@@ -12,7 +12,7 @@ def successful_registration_email(email, username, first_name, last_name):
 
     body_text = ""
 
-    logo_url = "https://imgur.com/a/eLsncuK"
+    logo_url = "https://i.imgur.com/X9JjKcx.png"
 
     body_html = f"""
     <html>
