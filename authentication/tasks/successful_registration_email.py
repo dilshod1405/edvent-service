@@ -12,7 +12,7 @@ def successful_registration_email(email, username, first_name, last_name):
 
     body_text = ""
 
-    logo_url = "https://archedu.uz/static/e.png"
+    logo_url = "https://imgur.com/a/eLsncuK"
 
     body_html = f"""
     <html>
@@ -31,7 +31,7 @@ def successful_registration_email(email, username, first_name, last_name):
                 Endi barcha darslar, kurslar va imkoniyatlar siz uchun ochiq!
               </p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://edvent.uz" target="_blank" style="
+                <a href="https://edvent.uz/signin" target="_blank" style="
                   background-color: #4F39F6;
                   color: #ffffff;
                   padding: 14px 28px;

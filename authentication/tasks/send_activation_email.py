@@ -12,7 +12,7 @@ def send_activation_email(email, username, first_name, last_name, activation_lin
     subject = 'Edvent.uz - Profilingizni aktivlashtiring'
     body_text = ""
 
-    logo_url = "https://archedu.uz/static/e.png"
+    logo_url = "https://imgur.com/a/eLsncuK"
 
     body_html = f"""
     <html>
