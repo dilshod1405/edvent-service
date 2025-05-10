@@ -12,7 +12,6 @@ API_KEY = getattr(settings, 'RESEND_API_KEY', None)
 @shared_task
 def successful_registration_email(email, username, first_name, last_name):
     subject = 'Edvent.uz - Muvaffaqiyatli ro‘yxatdan o‘tganingiz bilan!'
-    logo_url = "https://i.imgur.com/rRc8vsB.png"
 
     # Plain text version for email clients that do not support HTML
     body_text = (
@@ -27,15 +26,10 @@ def successful_registration_email(email, username, first_name, last_name):
     # HTML version
     body_html = f"""
     <html>
-      <body style="margin: 0; padding: 0; background-color: #0e0e16;">
+      <body style="margin: 0; padding: 0; background-color: 060a18; font-family: Arial, sans-serif;">
         <table align="center" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: auto; padding: 40px 0;">
           <tr>
-            <td style="text-align: center; padding-bottom: 20px;">
-              <img src="{logo_url}" alt="Edvent Logo" width="150" />
-            </td>
-          </tr>
-          <tr>
-            <td bgcolor="#0e0e16" style="padding: 20px 30px; border-radius: 10px; color: #ffffff; font-family: Arial, sans-serif;">
+            <td bgcolor="060a18" style="padding: 20px 30px; border-radius: 10px; color: #ffffff; font-family: Arial, sans-serif;">
               <h2 style="color: #4F39F6; text-align: center;">🎉 Tabriklaymiz, {first_name} {last_name}!</h2>
               <p style="font-size: 16px; color: #cccccc; text-align: center;">
                 Siz <strong>Edvent.uz</strong> platformasida muvaffaqiyatli ro‘yxatdan o‘tdingiz.<br>
