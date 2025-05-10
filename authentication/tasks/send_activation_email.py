@@ -26,8 +26,8 @@ Agar bu xabar sizga noto‘g‘ri yuborilgan deb hisoblasangiz, iltimos e’tibo
 
     body_html = f"""
 <html>
-  <body style="margin:0;padding:0;background-color:060a18;font-family:Arial,sans-serif;">
-    <table align="center" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;margin:auto;background-color:060a18;padding:40px 20px;">
+  <body style="margin:0;padding:0;background-color:#060a18;font-family:Arial,sans-serif;">
+    <table align="center" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;margin:auto;background-color: #060a18;padding:40px 20px;">
       <tr>
         <td style="color:#ffffff;text-align:center;">
           <h2>👋 Assalomu alaykum {first_name} {last_name}</h2>
