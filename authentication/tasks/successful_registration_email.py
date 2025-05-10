@@ -1,19 +1,30 @@
 import requests
+import logging
 from celery import shared_task
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
+
 RESEND_API_URL = "https://api.resend.com/emails"
-SENDER_EMAIL = settings.RESEND_SENDER_EMAIL
-API_KEY = settings.RESEND_API_KEY
+SENDER_EMAIL = getattr(settings, 'RESEND_SENDER_EMAIL', None)
+API_KEY = getattr(settings, 'RESEND_API_KEY', None)
 
 @shared_task
 def successful_registration_email(email, username, first_name, last_name):
     subject = 'Edvent.uz - Muvaffaqiyatli ro‘yxatdan o‘tganingiz bilan!'
-
-    body_text = ""
-
     logo_url = "https://i.imgur.com/rRc8vsB.png"
 
+    # Plain text version for email clients that do not support HTML
+    body_text = (
+        f"Assalomu alaykum, {first_name} {last_name}!\n\n"
+        "Siz Edvent.uz platformasida muvaffaqiyatli ro‘yxatdan o‘tdingiz.\n"
+        "Endi barcha darslar, kurslar va imkoniyatlar siz uchun ochiq!\n\n"
+        f"Profilga kirish: https://edvent.uz/signin\n\n"
+        "Omad tilaymiz!\n\n"
+        "Edvent.uz jamoasi"
+    )
+
+    # HTML version
     body_html = f"""
     <html>
       <body style="margin: 0; padding: 0; background-color: #0e0e16;">
@@ -59,6 +70,10 @@ def successful_registration_email(email, username, first_name, last_name):
     </html>
     """
 
+    if not all([API_KEY, SENDER_EMAIL]):
+        logger.error("RESEND_SENDER_EMAIL yoki RESEND_API_KEY sozlanmagan!")
+        return
+
     try:
         response = requests.post(
             RESEND_API_URL,
@@ -71,13 +86,14 @@ def successful_registration_email(email, username, first_name, last_name):
             },
             headers={
                 "Authorization": f"Bearer {API_KEY}"
-            }
+            },
+            timeout=10
         )
 
         if response.status_code == 200:
-            print("Email muvaffaqiyatli yuborildi")
+            logger.info(f"Email '{subject}' to {email} sent successfully.")
         else:
-            print(f"Email yuborishda xatolik: {response.status_code}, {response.text}")
-    
+            logger.error(f"Email yuborishda xatolik: {response.status_code}, {response.text}")
+
     except requests.exceptions.RequestException as e:
-        print(f"Email yuborishda xatolik: {e}")
+        logger.exception(f"Email yuborishda xatolik: {e}")
