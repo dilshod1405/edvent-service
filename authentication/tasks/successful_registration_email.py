@@ -50,7 +50,7 @@ def successful_registration_email(email, username, first_name, last_name):
                 </a>
               </div>
               <p style="font-size: 16px; color: #aaaaaa; text-align: center;">
-                Omad tilaymiz va ilmingizga ilm qo‘shing! 📚
+                Ilmingiz ziyoda bo'lsin! 📚
               </p>
               <hr style="border: 1px solid #333; margin: 30px 0;">
               <p style="font-size: 13px; color: #777777; text-align: center;">
