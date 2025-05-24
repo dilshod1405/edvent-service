@@ -23,7 +23,7 @@ services:
       - common-net
 
   db:
-    image: postgres:16
+    image: postgres:15
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
