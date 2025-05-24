@@ -3,6 +3,9 @@ version: '3.9'
 services:
   archedu:
     build: .
+    container_name: archedu
+    env_file:
+      - .env
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.production
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
@@ -13,29 +16,28 @@ services:
       - ./media:/app/config/media
     ports:
       - "8000:8000"
-    env_file:
-      - .env
     depends_on:
       - db
-    command: >
-      sh -c "
-        python manage.py makemigrations authentication &&
-        python manage.py makemigrations education &&
-        python manage.py makemigrations payment &&
-        python manage.py migrate &&
-        python manage.py collectstatic --noinput &&
-        gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4
-      "
+      - redis
+    command: ["sh", "/app/entrypoint.sh"]
+    networks:
+      - archedu-net
+      - common-net
 
   db:
     image: postgres:15
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - archedu-net
+      - common-net
 
   nginx:
     image: nginx:alpine
@@ -49,6 +51,9 @@ services:
       - "443:443"
     depends_on:
       - archedu
+    networks:
+      - archedu-net
+      - common-net
 
   certbot:
     image: certbot/certbot
@@ -70,30 +75,39 @@ services:
       - "6379:6379"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
+    networks:
+      - archedu-net
+      - common-net
 
   celery:
     build: .
+    env_file:
+      - .env
     command: celery -A config worker --loglevel=info
     volumes:
       - .:/app
-    env_file:
-      - .env
     depends_on:
       - redis
       - archedu
+    networks:
+      - archedu-net
+      - common-net
 
   celery-beat:
     build: .
+    env_file:
+      - .env
     command: celery -A config beat --loglevel=info
     volumes:
       - .:/app
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
-    env_file:
-      - .env
     depends_on:
       - redis
       - archedu
+    networks:
+      - archedu-net
+      - common-net
 
 volumes:
   static_volume:
@@ -101,3 +115,10 @@ volumes:
   certbot-etc:
   certbot-var:
   postgres_data:
+
+networks:
+  common-net:
+    external: true
+  archedu-net:
+    driver: bridge
+  

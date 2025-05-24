@@ -44,7 +44,9 @@ class ModuleAdmin(admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'speciality', 'teacher', 'duration')
+    list_display = ('title', 'speciality', 'teacher', 'duration', 'id')
+    list_editable = ('duration',)
+    ordering = ('id',)
     list_filter = ('speciality',)
     search_fields = ('title', 'description', 'teacher__name')
     inlines = [ModuleInline]
@@ -67,8 +69,7 @@ class SpecialityAdmin(admin.ModelAdmin):
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('name', 'profession', 'company', 'id')
-    search_fields = ('name',)
+    list_display = ('profession', 'company', 'id')
     list_editable = ('company', )
     ordering = ('id',)
 

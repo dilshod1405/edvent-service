@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+
 
 class Teacher(models.Model):
     name = models.CharField(max_length=100)
@@ -57,6 +61,11 @@ class Speciality(models.Model):
 class Course(models.Model):
     teacher = models.ForeignKey(Teacher, related_name='courses', on_delete=models.SET_NULL, null=True)
     speciality = models.ForeignKey(Speciality, related_name='courses', on_delete=models.CASCADE)
+    support = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='supported_courses'
+    )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     photo = models.ImageField(upload_to='courses/')
@@ -94,7 +103,7 @@ class Lesson(models.Model):
         verbose_name_plural = 'Lessons'
     
     def __str__(self):
-        return f'{self.module.title} - {self.title}'
+        return f'{self.module.course.title} - {self.module.title} - {self.title}'
 
 
 class Tariff(models.Model):

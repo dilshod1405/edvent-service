@@ -1,7 +1,10 @@
 from rest_framework import generics
-from .models import FoundationCourse, Course, Speciality, Teacher, Tariff, Homework, Resource
+from .models import FoundationCourse, Course, Speciality, Teacher, Tariff, Homework, Resource, Lesson
 from .serializers import FoundationCourseSerializer, CourseSerializer, SpecialitySerializer, TeacherSerializer, TariffSerializer, HomeworkSerializer, ResourceSerializer
 from rest_framework.generics import RetrieveAPIView
+from authentication.serializers.user_detail_serializer import UserDetailSerializer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 class FoundationCourseListAPIView(generics.ListAPIView):
     queryset = FoundationCourse.objects.select_related('teacher').prefetch_related('videos').all()
@@ -69,3 +72,14 @@ class ResourceListByLessonAPIView(generics.ListAPIView):
     def get_queryset(self):
         lesson_id = self.kwargs.get('lesson_id')
         return Resource.objects.filter(lesson_id=lesson_id)
+
+
+class LessonSupportAPIView(APIView):
+    def get(self, request, lesson_id):
+        try:
+            lesson = Lesson.objects.select_related('module__course__support').get(id=lesson_id)
+            support = lesson.module.course.support
+            serializer = UserDetailSerializer(support, context={'request': request})
+            return Response(serializer.data)
+        except Lesson.DoesNotExist:
+            return Response({"error": "Lesson not found"}, status=404)

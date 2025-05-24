@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from authentication.serializers.user_detail_serializer import UserDetailSerializer
 from .models import (
     Teacher, FoundationCourse, Video, Speciality,
     Course, Module, Lesson, Tariff, Resource, Homework
@@ -8,7 +9,7 @@ from .models import (
 class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
-        fields = ['id', 'name', 'experience', 'profession', 'company', 'logo']
+        fields = ['id', 'experience', 'profession', 'company', 'logo']
 
 
 # Video (reverse relation from FoundationCourse)
@@ -34,14 +35,13 @@ class SpecialitySerializer(serializers.ModelSerializer):
         model = Speciality
         fields = ['id', 'title', 'description']
 
-
 # Lesson
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = ['id', 'title', 'video_url', 'duration']
-
-
+        
+        
 # Module
 class ModuleSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True, read_only=True)
@@ -49,17 +49,18 @@ class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = ['id', 'title', 'price', 'lessons']
-
+        
 
 # Course (with nested modules and teacher)
 class CourseSerializer(serializers.ModelSerializer):
     teacher = TeacherSerializer()
     speciality = SpecialitySerializer()
     modules = ModuleSerializer(many=True, read_only=True)
+    support = UserDetailSerializer()
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'description', 'photo', 'duration', 'teacher', 'speciality', 'modules']
+        fields = ['id', 'title', 'description', 'photo', 'duration', 'teacher', 'support', 'speciality', 'modules']
 
 
 # Resource

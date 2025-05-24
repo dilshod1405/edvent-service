@@ -43,14 +43,14 @@ INSTALLED_APPS = [
     "authentication",
     "payment",
     "education",
-    
-    "payme"
+    "payme",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    "corsheaders.middleware.CorsMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -132,9 +132,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'config', 'static'),
-]
+STATICFILES_DIRS = [BASE_DIR / 'static']
+
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = '/media/'
@@ -164,19 +163,6 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
-AWS_REGION_NAME = config("AWS_REGION_NAME")
-AWS_SES_REGION_ENDPOINT = config("AWS_SES_REGION_ENDPOINT")
-DEFAULT_FROM_EMAIL = 'noreply@archedu.uz'
-
-EMAIL_BACKEND = 'django_ses.SESBackend'
-EMAIL_HOST = AWS_SES_REGION_ENDPOINT
-EMAIL_HOST_USER = config("AWS_ACCESS_KEY_ID")
-EMAIL_HOST_PASSWORD = config("AWS_SECRET_ACCESS_KEY")
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
 RESEND_API_KEY = config("RESEND_API_KEY")
 RESEND_SENDER_EMAIL = config("RESEND_SENDER_EMAIL")
 
@@ -203,26 +189,25 @@ CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS').split(' ')
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS').split(' ')
-CORS_ALLOW_CREDENTIALS = config('CORS_ALLOW_CREDENTIALS', cast=bool, default=False)
+
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': 'errors.log',
+        'console': {
+            'class': 'logging.StreamHandler',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
+        'chat.consumer': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
         },
     },
 }

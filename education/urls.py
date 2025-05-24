@@ -10,7 +10,8 @@ from .views import (
     TariffListAPIView,
     TariffDetailAPIView,
     SpecialityListAPIView,
-    SpecialityDetailAPIView
+    SpecialityDetailAPIView,
+    LessonSupportAPIView
 )
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path('tariffs/<int:pk>/', TariffDetailAPIView.as_view(), name='tariff-detail'),
     path('specialities/', SpecialityListAPIView.as_view(), name='speciality-list'),
     path('specialities/<int:pk>/', SpecialityDetailAPIView.as_view(), name='speciality-detail'),
+    path('lessons/<int:lesson_id>/support/', LessonSupportAPIView.as_view(), name='lesson-support'),
     path('homework/<int:lesson_id>/', HomeworkListByLessonAPIView.as_view(), name='homework-by-lesson'),
     path('resource/<int:lesson_id>/', ResourceListByLessonAPIView.as_view(), name='resource-by-lesson'),
 ]
