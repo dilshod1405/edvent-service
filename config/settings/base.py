@@ -190,8 +190,19 @@ SESSION_COOKIE_SECURE = False
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = ['https://www.edvent.uz', 'https://edvent.uz', 'http://localhost:5000']
-CSRF_TRUSTED_ORIGINS = ['https://www.edvent.uz', 'https://edvent.uz', "https://archedu.uz", "https://www.archedu.uz", "http://localhost:5000"]
+CORS_ALLOWED_ORIGINS = [
+    'https://www.edvent.uz',
+    'https://edvent.uz',
+    'http://localhost:5000',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://www.edvent.uz',
+    'https://edvent.uz',
+    'https://archedu.uz',
+    'https://www.archedu.uz',
+    'http://localhost:5000',
+]
 
 LOGGING = {
     'version': 1,
