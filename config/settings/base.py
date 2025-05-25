@@ -240,14 +240,12 @@ SECURE_SSL_REDIRECT = True
 
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Edvent",
-    "site_header": "Edvent admin",
-    "site_brand": "Edvent",
+    "site_title": "Edvent.uz",
+    "site_brand": "Edvent.uz",
     "welcome_title": "Edvent admin paneliga xush kelibsiz!",
     "site_icon": "images/e.png",
     "welcome_sign": "Edvent admin paneliga xush kelibsiz! Buyer faqat xodimlar uchun!",
     "copyright": "Edvent 2025",
-    "login_logo": "images/e.png",
 
     # Login sahifasi uchun LOGO
     "custom_css": "admin/css/custom.css",
