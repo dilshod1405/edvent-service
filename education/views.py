@@ -91,7 +91,7 @@ class LessonSupportAPIView(APIView):
 
 # VdoCipher OTP view
 class VdoCipherOTPView(APIView):
-    permission_classes = [IsAuthenticated]  # Agar login bo'lmaganlarga ruxsat bermasangiz
+    permission_classes = [IsAuthenticated]  # Faqat login qilingan foydalanuvchilar
 
     def post(self, request, lesson_id):
         try:
@@ -99,13 +99,34 @@ class VdoCipherOTPView(APIView):
         except Lesson.DoesNotExist:
             return Response({"error": "Lesson not found"}, status=404)
 
-        video_id = lesson.video_url.split("/")[-1]  # URL dan video ID ajratamiz
+        video_id = lesson.video_url.split("/")[-1]  # Video ID ajratamiz
         api_url = f"https://dev.vdocipher.com/api/videos/{video_id}/otp"
         headers = {
             "Authorization": f"Apisecret {settings.VDOCIPHER_API_SECRET}",
             "Content-Type": "application/json",
         }
-        payload = {"ttl": 300}  # OTP 5 daqiqa yaroqli bo'ladi
+
+        payload = {
+            "ttl": 300,
+            "annotate": [
+                {
+                    "text": request.user.username, # Username
+                    "color": "white",
+                    "alpha": 0.5,
+                    "size": "14",
+                    "interval": 5000,
+                    "duration": 1000,
+                    "position": "random"
+                },
+                {
+                    "text": request.user.get_full_name(),  # First and last name
+                    "color": "white",
+                    "alpha": 0.5,
+                    "size": "16",
+                    "position": "bottom-right"  # Static location
+                }
+            ]
+        }
 
         r = requests.post(api_url, headers=headers, json=payload)
         if r.status_code == 200:
