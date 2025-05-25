@@ -12,6 +12,7 @@ build==1.2.2.post1
 celery==5.5.2
 certifi==2025.4.26
 cffi==1.17.1
+channels==4.2.2
 channels_redis==4.2.1
 charset-normalizer==3.4.1
 click==8.1.8
@@ -27,7 +28,9 @@ django-allauth==65.7.0
 django-colorfield==0.14.0
 django-cors-headers==4.7.0
 django-filter==25.1
+django-jazzmin==3.0.1
 django-rest-framework==0.1.0
+django-rosetta==0.10.2
 django-ses==4.4.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
@@ -52,6 +55,7 @@ packaging==25.0
 payme-pkg==3.0.24
 pillow==11.2.1
 pip-tools==7.4.1
+polib==1.2.0
 prompt_toolkit==3.0.51
 psycopg2-binary==2.9.10
 pyasn1==0.6.1
