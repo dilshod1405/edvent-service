@@ -20,6 +20,7 @@ DEBUG = config("DEBUG", cast=bool, default=False)
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -236,3 +237,36 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_SSL_REDIRECT = True
+
+
+JAZZMIN_SETTINGS = {
+    "site_title": "VCHD Buxoro",
+    "site_header": "VCHD Buxoro",
+    "site_brand": "VCHD Buxoro",
+    "site_logo": "images/e.png",
+    "welcome_title": "VCHD Buxoro admin paneli",
+    "site_icon": "images/logo.png",
+    "welcome_sign": "Buxoro vagon deposi admin paneliga xush kelibsiz!",
+    "copyright": "VCHD Buxoro",
+    "login_logo": "images/e.png",
+
+    # Login sahifasi uchun LOGO
+    "custom_css": "admin/css/custom.css",
+
+
+    # Buttonlar rangi
+    "button_classes": {
+        "primary": "btn btn-outline-indigo",
+        "danger": "btn btn-outline-danger",
+        "success": "btn btn-success",
+        "warning": "btn btn-warning",
+        "info": "btn btn-info",
+    },
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "show_ui_builder": False,
+    "footer_fixed": True,
+    "sidebar_fixed": True,
+    "show_jazzmin_version": False,
+}
