@@ -5,6 +5,9 @@ from rest_framework.generics import RetrieveAPIView
 from authentication.serializers.user_detail_serializer import UserDetailSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+import requests
 
 class FoundationCourseListAPIView(generics.ListAPIView):
     queryset = FoundationCourse.objects.select_related('teacher').prefetch_related('videos').all()
@@ -83,3 +86,29 @@ class LessonSupportAPIView(APIView):
             return Response(serializer.data)
         except Lesson.DoesNotExist:
             return Response({"error": "Lesson not found"}, status=404)
+
+
+
+# VdoCipher OTP view
+class VdoCipherOTPView(APIView):
+    permission_classes = [IsAuthenticated]  # Agar login bo'lmaganlarga ruxsat bermasangiz
+
+    def post(self, request, lesson_id):
+        try:
+            lesson = Lesson.objects.get(id=lesson_id)
+        except Lesson.DoesNotExist:
+            return Response({"error": "Lesson not found"}, status=404)
+
+        video_id = lesson.video_url.split("/")[-1]  # URL dan video ID ajratamiz
+        api_url = f"https://dev.vdocipher.com/api/videos/{video_id}/otp"
+        headers = {
+            "Authorization": f"Apisecret {settings.VDOCIPHER_API_SECRET}",
+            "Content-Type": "application/json",
+        }
+        payload = {"ttl": 300}  # OTP 5 daqiqa yaroqli bo'ladi
+
+        r = requests.post(api_url, headers=headers, json=payload)
+        if r.status_code == 200:
+            return Response(r.json())
+        else:
+            return Response({"error": "Failed to get OTP"}, status=r.status_code)
