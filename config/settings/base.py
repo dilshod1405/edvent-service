@@ -131,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
@@ -240,14 +240,13 @@ SECURE_SSL_REDIRECT = True
 
 
 JAZZMIN_SETTINGS = {
-    "site_title": "VCHD Buxoro",
-    "site_header": "VCHD Buxoro",
-    "site_brand": "VCHD Buxoro",
-    "site_logo": "images/e.png",
-    "welcome_title": "VCHD Buxoro admin paneli",
-    "site_icon": "images/logo.png",
-    "welcome_sign": "Buxoro vagon deposi admin paneliga xush kelibsiz!",
-    "copyright": "VCHD Buxoro",
+    "site_title": "Edvent",
+    "site_header": "Edvent admin",
+    "site_brand": "Edvent",
+    "welcome_title": "Edvent admin paneliga xush kelibsiz!",
+    "site_icon": "images/e.png",
+    "welcome_sign": "Edvent admin paneliga xush kelibsiz! Buyer faqat xodimlar uchun!",
+    "copyright": "Edvent 2025",
     "login_logo": "images/e.png",
 
     # Login sahifasi uchun LOGO
