@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 import requests
+from rest_framework.generics import ListAPIView
+from .serializers import LessonSerializer
 
 class FoundationCourseListAPIView(generics.ListAPIView):
     queryset = FoundationCourse.objects.select_related('teacher').prefetch_related('videos').all()
@@ -88,10 +90,17 @@ class LessonSupportAPIView(APIView):
             return Response({"error": "Lesson not found"}, status=404)
 
 
+class ModuleLessonsView(ListAPIView):
+    serializer_class = LessonSerializer
+
+    def get_queryset(self):
+        module_id = self.kwargs['module_id']
+        return Lesson.objects.filter(module_id=module_id).order_by('id')
+
 
 # VdoCipher OTP view
 class VdoCipherOTPView(APIView):
-    permission_classes = [IsAuthenticated]  # Faqat login qilingan foydalanuvchilar
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, lesson_id):
         try:
@@ -99,7 +108,8 @@ class VdoCipherOTPView(APIView):
         except Lesson.DoesNotExist:
             return Response({"error": "Lesson not found"}, status=404)
 
-        video_id = lesson.video_url.split("/")[-1]  # Video ID ajratamiz
+        video_id = lesson.video_id
+
         api_url = f"https://dev.vdocipher.com/api/videos/{video_id}/otp"
         headers = {
             "Authorization": f"Apisecret {settings.VDOCIPHER_API_SECRET}",
@@ -107,10 +117,10 @@ class VdoCipherOTPView(APIView):
         }
 
         payload = {
-            "ttl": 300,
+            "ttl": 300,  # URL 5 daqiqa amal qiladi
             "annotate": [
                 {
-                    "text": request.user.username, # Username
+                    "text": request.user.username,
                     "color": "white",
                     "alpha": 0.5,
                     "size": "14",
@@ -119,17 +129,21 @@ class VdoCipherOTPView(APIView):
                     "position": "random"
                 },
                 {
-                    "text": request.user.get_full_name(),  # First and last name
+                    "text": request.user.get_full_name(),
                     "color": "white",
                     "alpha": 0.5,
                     "size": "16",
-                    "position": "bottom-right"  # Static location
+                    "position": "bottom-right"
                 }
             ]
         }
 
-        r = requests.post(api_url, headers=headers, json=payload)
-        if r.status_code == 200:
-            return Response(r.json())
+        response = requests.post(api_url, headers=headers, json=payload)
+
+        if response.status_code == 200:
+            return Response(response.json())
         else:
-            return Response({"error": "Failed to get OTP"}, status=r.status_code)
+            return Response(
+                {"error": "Failed to get OTP", "details": response.json()},
+                status=response.status_code
+            )

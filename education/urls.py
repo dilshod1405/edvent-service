@@ -12,7 +12,8 @@ from .views import (
     SpecialityListAPIView,
     SpecialityDetailAPIView,
     LessonSupportAPIView,
-    VdoCipherOTPView
+    VdoCipherOTPView,
+    ModuleLessonsView,
 )
 
 urlpatterns = [
@@ -20,6 +21,7 @@ urlpatterns = [
     path('foundation-courses/<int:id>/', FoundationCourseDetailAPIView.as_view(), name='foundation-course-detail'),
     path('courses/', CourseListAPIView.as_view(), name='course-list'),
     path('courses/<int:pk>/', CourseDetailAPIView.as_view(), name='course-detail'),
+    path('modules/<int:module_id>/lessons/', ModuleLessonsView.as_view(), name='module-lessons'),
     path('teachers/', TeacherListAPIView.as_view(), name='teacher-list'),
     path('teachers/<int:pk>/', TeacherListAPIView.as_view(), name='teacher-detail'),
     path('tariffs/', TariffListAPIView.as_view(), name='tariff-list'),

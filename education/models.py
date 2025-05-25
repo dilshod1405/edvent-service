@@ -21,7 +21,7 @@ class Teacher(models.Model):
 
 class Video(models.Model):
     title = models.CharField(max_length=255)
-    video_url = models.URLField()
+    video_id = models.URLField()
     
     class Meta:
         verbose_name = 'Video'
@@ -95,7 +95,7 @@ class Module(models.Model):
 class Lesson(models.Model):
     module = models.ForeignKey(Module, related_name='lessons', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    video_url = models.URLField()
+    video_id = models.CharField(max_length=255)
     duration = models.DurationField(null=True, blank=True)
 
     class Meta:

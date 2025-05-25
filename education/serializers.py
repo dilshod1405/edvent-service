@@ -16,7 +16,7 @@ class TeacherSerializer(serializers.ModelSerializer):
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
-        fields = ['id', 'title', 'video_url']
+        fields = ['id', 'title', 'video_id']
 
 
 # FoundationCourse
@@ -39,7 +39,7 @@ class SpecialitySerializer(serializers.ModelSerializer):
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
-        fields = ['id', 'title', 'video_url', 'duration']
+        fields = ['id', 'title', 'video_id', 'duration']
         
         
 # Module
