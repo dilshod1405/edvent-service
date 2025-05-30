@@ -10,6 +10,7 @@ from django.conf import settings
 import requests
 from rest_framework.generics import ListAPIView
 from .serializers import LessonSerializer
+import json
 
 class FoundationCourseListAPIView(generics.ListAPIView):
     queryset = FoundationCourse.objects.select_related('teacher').prefetch_related('videos').all()
@@ -118,7 +119,7 @@ class VdoCipherOTPView(APIView):
 
         payload = {
             "ttl": 300,  # URL 5 daqiqa amal qiladi
-            "annotate": [
+            "annotate": json.dumps([
                 {
                     "text": request.user.username,
                     "color": "white",
@@ -135,7 +136,7 @@ class VdoCipherOTPView(APIView):
                     "size": "16",
                     "position": "bottom-right"
                 }
-            ]
+            ])
         }
 
         response = requests.post(api_url, headers=headers, json=payload)
