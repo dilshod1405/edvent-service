@@ -112,8 +112,8 @@ class VdoCipherOTPView(APIView):
             "Accept": "application/json"
         }
 
-        # annotate ni string (json formatda) qilish shart
-        annotate_payload = [
+        # annotate faqat string bo'lishi kerak
+        annotate_json_string = json.dumps([
             {
                 "text": request.user.username,
                 "color": "white",
@@ -130,18 +130,19 @@ class VdoCipherOTPView(APIView):
                 "size": "16",
                 "position": "bottom-right"
             }
-        ]
+        ])
 
         payload = {
             "ttl": 300,
-            "type": "video",
-            "annotate": json.dumps(annotate_payload)  # faqat annotate ni json ga aylantirish kerak
+            "type": "video",  # bu yerda string bo'lishi shart
+            "annotate": annotate_json_string  # bu json formatdagi string
         }
 
+        # butun payloadni json formatda uzatamiz
         response = requests.post(
             api_url,
             headers=headers,
-            data=json.dumps(payload)  # butun payloadni json stringga aylantirish kerak
+            data=json.dumps(payload)  # bu yerda data bo'lishi shart, json emas
         )
 
         if response.status_code == 200:
