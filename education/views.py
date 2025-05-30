@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 import requests
 from rest_framework.generics import ListAPIView
-from .serializers import LessonSerializer
+from .serializers import LessonSerializer, LessonDetailSerializer
 import json
 import requests
 
@@ -82,7 +82,7 @@ class ResourceListByLessonAPIView(generics.ListAPIView):
 
 class LessonDetailView(RetrieveAPIView):
     queryset = Lesson.objects.all()
-    serializer_class = LessonSerializer
+    serializer_class = LessonDetailSerializer
     permission_classes = [IsAuthenticated]
 
 class LessonSupportAPIView(APIView):

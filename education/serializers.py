@@ -85,3 +85,35 @@ class TariffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tariff
         fields = ['id', 'title', 'price', 'discount_percent', 'is_active', 'speciality', 'courses']
+
+
+class LessonListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'title']
+        
+        
+class LessonDetailSerializer(serializers.ModelSerializer):
+    module_id = serializers.IntegerField(source='module.id')
+    module_title = serializers.CharField(source='module.title')
+    course_id = serializers.IntegerField(source='module.course.id')
+    course_title = serializers.CharField(source='module.course.title')
+    
+    resources = ResourceSerializer(many=True, read_only=True)
+    homeworks = HomeworkSerializer(many=True, read_only=True)
+    
+    module_lessons = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Lesson
+        fields = [
+            'id', 'title', 'video_id', 'duration',
+            'module_id', 'module_title',
+            'course_id', 'course_title',
+            'resources', 'homeworks',
+            'module_lessons',
+        ]
+    
+    def get_module_lessons(self, obj):
+        lessons = Lesson.objects.filter(module=obj.module).exclude(id=obj.id)
+        return LessonListSerializer(lessons, many=True).data
