@@ -115,7 +115,7 @@ class VdoCipherOTPView(APIView):
         payload = {
             "ttl": 300,
             "type": "video",
-            "annotate": json.dumps([
+            "annotate": [
                 {
                     "text": request.user.username,
                     "color": "white",
@@ -132,13 +132,13 @@ class VdoCipherOTPView(APIView):
                     "size": "16",
                     "position": "bottom-right"
                 }
-            ])
+            ]
         }
 
         response = requests.post(
             api_url,
             headers=headers,
-            data=json.dumps(payload)
+            json=payload
         )
 
         if response.status_code == 200:
