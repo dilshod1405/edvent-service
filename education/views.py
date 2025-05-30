@@ -100,7 +100,8 @@ class ModuleLessonsView(ListAPIView):
         return Lesson.objects.filter(module_id=module_id).order_by('id')
 
 
-# VdoCipher OTP viewclass VdoCipherOTPView(APIView):
+# VdoCipher OTP viewclass 
+class VdoCipherOTPView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, video_id):
