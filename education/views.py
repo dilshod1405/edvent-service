@@ -104,14 +104,7 @@ class ModuleLessonsView(ListAPIView):
 class VdoCipherOTPView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, lesson_id):
-        try:
-            lesson = Lesson.objects.get(id=lesson_id)
-        except Lesson.DoesNotExist:
-            return Response({"error": "Lesson not found"}, status=404)
-
-        video_id = lesson.video_id
-
+    def post(self, request, video_id):
         api_url = f"https://dev.vdocipher.com/api/videos/{video_id}/otp"
         headers = {
             "Authorization": f"Apisecret {settings.VDOCIPHER_API_SECRET}",
@@ -145,7 +138,7 @@ class VdoCipherOTPView(APIView):
         response = requests.post(
             api_url,
             headers=headers,
-            data=json.dumps(payload)  # Butun payloadni stringga aylantiramiz
+            data=json.dumps(payload)
         )
 
         if response.status_code == 200:
