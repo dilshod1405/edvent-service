@@ -11,6 +11,7 @@ import requests
 from rest_framework.generics import ListAPIView
 from .serializers import LessonSerializer
 import json
+import requests
 
 class FoundationCourseListAPIView(generics.ListAPIView):
     queryset = FoundationCourse.objects.select_related('teacher').prefetch_related('videos').all()
@@ -115,12 +116,13 @@ class VdoCipherOTPView(APIView):
         headers = {
             "Authorization": f"Apisecret {settings.VDOCIPHER_API_SECRET}",
             "Content-Type": "application/json",
+            "Accept": "application/json"
         }
 
         payload = {
             "ttl": 300,
             "type": "video",
-            "annotate": [
+            "annotate": json.dumps([
                 {
                     "text": request.user.username,
                     "color": "white",
@@ -137,10 +139,14 @@ class VdoCipherOTPView(APIView):
                     "size": "16",
                     "position": "bottom-right"
                 }
-            ]
+            ])
         }
 
-        response = requests.post(api_url, headers=headers, json=payload)
+        response = requests.post(
+            api_url,
+            headers=headers,
+            data=json.dumps(payload)  # Butun payloadni stringga aylantiramiz
+        )
 
         if response.status_code == 200:
             return Response(response.json())
