@@ -80,6 +80,10 @@ class ResourceListByLessonAPIView(generics.ListAPIView):
         lesson_id = self.kwargs.get('lesson_id')
         return Resource.objects.filter(lesson_id=lesson_id)
 
+class LessonDetailView(RetrieveAPIView):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+    permission_classes = [IsAuthenticated]
 
 class LessonSupportAPIView(APIView):
     def get(self, request, lesson_id):
