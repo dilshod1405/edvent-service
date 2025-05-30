@@ -31,5 +31,5 @@ urlpatterns = [
     path('lessons/<int:lesson_id>/support/', LessonSupportAPIView.as_view(), name='lesson-support'),
     path('homework/<int:lesson_id>/', HomeworkListByLessonAPIView.as_view(), name='homework-by-lesson'),
     path('resource/<int:lesson_id>/', ResourceListByLessonAPIView.as_view(), name='resource-by-lesson'),
-    path('vdocipher/otp/<int:lesson_id>/', VdoCipherOTPView.as_view(), name='vdocipher-otp'),
+    path('vdocipher/otp/<str:video_id>/', VdoCipherOTPView.as_view(), name='vdocipher-otp'),
 ]
