@@ -119,6 +119,7 @@ class VdoCipherOTPView(APIView):
 
         payload = {
             "ttl": 300,  # URL 5 daqiqa amal qiladi
+            "type": "video",
             "annotate": json.dumps([
                 {
                     "text": request.user.username,
