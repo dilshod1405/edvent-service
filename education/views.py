@@ -100,11 +100,16 @@ class ModuleLessonsView(ListAPIView):
         return Lesson.objects.filter(module_id=module_id).order_by('id')
 
 
-# VdoCipher OTP view
-class VdoCipherOTPView(APIView):
+# VdoCipher OTP viewclass VdoCipherOTPView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, video_id):
+        # Video ID dan Lesson topamiz
+        try:
+            lesson = Lesson.objects.get(video_id=video_id)
+        except Lesson.DoesNotExist:
+            return Response({"error": "Lesson not found"}, status=404)
+
         api_url = f"https://dev.vdocipher.com/api/videos/{video_id}/otp"
         headers = {
             "Authorization": f"Apisecret {settings.VDOCIPHER_API_SECRET}",
@@ -112,38 +117,25 @@ class VdoCipherOTPView(APIView):
             "Accept": "application/json"
         }
 
-        # annotate faqat string bo'lishi kerak
-        annotate_json_string = json.dumps([
+        # Annotatsiyani JSON string qilib yuboramiz
+        annotate_string = json.dumps([
             {
+                "type": "rtext",
                 "text": request.user.username,
-                "color": "white",
-                "alpha": 0.5,
-                "size": "14",
-                "interval": 5000,
-                "duration": 1000,
-                "position": "random"
-            },
-            {
-                "text": request.user.get_full_name(),
-                "color": "white",
-                "alpha": 0.5,
-                "size": "16",
-                "position": "bottom-right"
+                "alpha": "0.60",
+                "color": "0xFFFFFF",
+                "size": "15",
+                "interval": "5000"
             }
         ])
 
         payload = {
             "ttl": 300,
-            "type": "video",  # bu yerda string bo'lishi shart
-            "annotate": annotate_json_string  # bu json formatdagi string
+            "type": "video",
+            "annotate": annotate_string  # bu string bo'lishi kerak!
         }
 
-        # butun payloadni json formatda uzatamiz
-        response = requests.post(
-            api_url,
-            headers=headers,
-            data=json.dumps(payload)  # bu yerda data bo'lishi shart, json emas
-        )
+        response = requests.post(api_url, headers=headers, data=json.dumps(payload))
 
         if response.status_code == 200:
             return Response(response.json())
