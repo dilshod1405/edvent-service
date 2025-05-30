@@ -118,9 +118,9 @@ class VdoCipherOTPView(APIView):
         }
 
         payload = {
-            "ttl": 300,  # URL 5 daqiqa amal qiladi
+            "ttl": 300,
             "type": "video",
-            "annotate": json.dumps([
+            "annotate": [
                 {
                     "text": request.user.username,
                     "color": "white",
@@ -137,7 +137,7 @@ class VdoCipherOTPView(APIView):
                     "size": "16",
                     "position": "bottom-right"
                 }
-            ])
+            ]
         }
 
         response = requests.post(api_url, headers=headers, json=payload)
