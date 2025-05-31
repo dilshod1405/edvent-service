@@ -14,8 +14,11 @@ import json
 import requests
 
 class FoundationCourseListAPIView(generics.ListAPIView):
-    queryset = FoundationCourse.objects.select_related('teacher').prefetch_related('videos').all()
     serializer_class = FoundationCourseSerializer
+
+    def get_queryset(self):
+        return list(FoundationCourse.objects.select_related('teacher').prefetch_related('videos'))
+
 
 
 class FoundationCourseDetailAPIView(RetrieveAPIView):

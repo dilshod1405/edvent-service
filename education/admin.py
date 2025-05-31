@@ -65,6 +65,7 @@ class TariffAdmin(admin.ModelAdmin):
 class SpecialityAdmin(admin.ModelAdmin):
     list_display = ('title', 'description', 'id')
     search_fields = ('title',)
+    ordering = ('id',)
 
 
 @admin.register(Teacher)
@@ -80,6 +81,12 @@ from .models import FoundationCourse
 class FoundationCourseAdmin(admin.ModelAdmin):
     list_display = ('title', 'teacher', 'price')
     search_fields = ('title', 'teacher__name')
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "teacher":
+            kwargs["queryset"] = Teacher.objects.all()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 @admin.register(Video)
