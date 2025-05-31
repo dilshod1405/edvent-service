@@ -55,7 +55,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Tariff)
 class TariffAdmin(admin.ModelAdmin):
-    list_display = ('title', 'speciality', 'price', 'discount_percent', 'is_active')
+    list_display = ('title', 'speciality', 'price', 'discount_percent', 'is_active', 'id')
     list_filter = ('speciality', 'is_active')
     filter_horizontal = ('courses',)
     search_fields = ('title',)
@@ -63,7 +63,7 @@ class TariffAdmin(admin.ModelAdmin):
 
 @admin.register(Speciality)
 class SpecialityAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description')
+    list_display = ('title', 'description', 'id')
     search_fields = ('title',)
 
 
