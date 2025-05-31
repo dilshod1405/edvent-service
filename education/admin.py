@@ -27,7 +27,7 @@ class ModuleInline(admin.TabularInline):
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ('title', 'module', 'video_id', 'duration', 'id')
+    list_display = ('title', 'module', 'description', 'video_id', 'duration', 'id')
     search_fields = ('title', 'module__title')
     inlines = [ResourceInline, HomeworkInline]
     ordering = ('id',)

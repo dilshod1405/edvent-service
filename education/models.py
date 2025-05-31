@@ -95,6 +95,7 @@ class Module(models.Model):
 class Lesson(models.Model):
     module = models.ForeignKey(Module, related_name='lessons', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
     video_id = models.CharField(max_length=255)
     duration = models.DurationField(null=True, blank=True)
 

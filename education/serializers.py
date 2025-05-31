@@ -107,7 +107,7 @@ class LessonDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = [
-            'id', 'title', 'video_id', 'duration',
+            'id', 'title', 'description', 'video_id', 'duration',
             'module_id', 'module_title',
             'course_id', 'course_title',
             'resources', 'homeworks',
