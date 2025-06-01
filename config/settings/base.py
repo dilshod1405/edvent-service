@@ -157,7 +157,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Sizning API nomingiz',
+    'TITLE': 'Edvent API',
+    'DESCRIPTION': 'Edvent API hujjatlari',
     'DESCRIPTION': 'API hujjatlari',
     'VERSION': '1.0.0',
 }
