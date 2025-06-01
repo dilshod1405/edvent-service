@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "education",
     "payme",
     "django_filters",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -150,7 +151,14 @@ ADMIN_INTERFACE_ENABLED = True
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ]
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Sizning API nomingiz',
+    'DESCRIPTION': 'API hujjatlari',
+    'VERSION': '1.0.0',
 }
 
 AUTHENTICATION_BACKENDS = [

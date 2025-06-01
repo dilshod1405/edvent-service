@@ -2,22 +2,19 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from authentication.permissions import IsAdminUserOnly
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
 
-schema_view = get_schema_view(
-    openapi.Info(
-        title="archedu.uz (edvent.uz) API Documentation",
-        default_version='v1',
-        description="API documentation for the Archedu platform, formerly known as Edvent.",
-    ),
-    public=False,
-    permission_classes=[IsAdminUserOnly],
+swagger_view = SpectacularSwaggerView.as_view(
+    permission_classes=[IsAdminUserOnly]
+)
+
+redoc_view = SpectacularRedocView.as_view(
+    permission_classes=[IsAdminUserOnly]
 )
 
 
@@ -30,7 +27,15 @@ urlpatterns = [
     path('auth-token/', include('djoser.urls.authtoken')),  # Token-based auth routes
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+
+    # OpenAPI schema fayl (admin yoki auth talab qilmaydi odatda)
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+
+    # Swagger UI
+    path('api/docs/', swagger_view, name='swagger-ui'),
+
+    # Redoc UI (ixtiyoriy)
+    path('api/redoc/', redoc_view, name='redoc'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
