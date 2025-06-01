@@ -32,6 +32,7 @@ class LessonAdmin(admin.ModelAdmin):
     inlines = [ResourceInline, HomeworkInline]
     ordering = ('id',)
     list_editable = ('video_id', 'duration')
+    list_filter = ('module',)
 
 
 @admin.register(Module)
@@ -40,6 +41,7 @@ class ModuleAdmin(admin.ModelAdmin):
     search_fields = ('title', 'course__title')
     inlines = [LessonInline]
     ordering = ('id',)
+    list_filter = ('course',)
 
 
 @admin.register(Course)
