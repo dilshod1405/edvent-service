@@ -5,21 +5,16 @@ from .models import (
     Course, Module, Lesson, Tariff, Resource, Homework
 )
 
-# Teacher
 class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
-        fields = ['id', 'experience', 'profession', 'company', 'logo']
+        fields = ['id', 'name', 'experience', 'profession', 'company', 'logo']
 
-
-# Video (reverse relation from FoundationCourse)
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
         fields = ['id', 'title', 'video_id']
 
-
-# FoundationCourse
 class FoundationCourseSerializer(serializers.ModelSerializer):
     teacher = TeacherSerializer()
     videos = VideoSerializer(many=True, read_only=True)

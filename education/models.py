@@ -19,24 +19,12 @@ class Teacher(models.Model):
         return self.name
 
 
-class Video(models.Model):
-    title = models.CharField(max_length=255)
-    video_id = models.URLField()
-    
-    class Meta:
-        verbose_name = 'Video'
-        verbose_name_plural = 'Videos'
-
-    def __str__(self):
-        return self.title
-
 class FoundationCourse(models.Model):
     teacher = models.ForeignKey(Teacher, related_name='foundation_courses', on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
     description = models.TextField()
     photo = models.ImageField(upload_to='foundation_courses/')
     price = models.PositiveIntegerField()
-    videos = models.ManyToManyField(Video, related_name='foundation_courses')
     
     class Meta:
         verbose_name = 'Foundation Course'
@@ -45,6 +33,23 @@ class FoundationCourse(models.Model):
     def __str__(self):
         return self.title
     
+    
+class Video(models.Model):
+    title = models.CharField(max_length=255)
+    video_id = models.CharField(max_length=255, unique=True)
+    foundation_course = models.ForeignKey(
+        FoundationCourse,
+        related_name='videos',
+        on_delete=models.CASCADE
+    )
+    
+    class Meta:
+        verbose_name = 'Video'
+        verbose_name_plural = 'Videos'
+
+    def __str__(self):
+        return self.title
+
 
 class Speciality(models.Model):
     title = models.CharField(max_length=255)
@@ -96,7 +101,7 @@ class Lesson(models.Model):
     module = models.ForeignKey(Module, related_name='lessons', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
-    video_id = models.CharField(max_length=255)
+    video_id = models.CharField(max_length=255, unique=True)
     duration = models.DurationField(null=True, blank=True)
 
     class Meta:

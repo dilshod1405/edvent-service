@@ -76,27 +76,28 @@ class TeacherAdmin(admin.ModelAdmin):
 
 
 from .models import FoundationCourse
-
+class VideoInline(admin.TabularInline):
+    model = Video
+    extra = 1
+    
+    
 @admin.register(FoundationCourse)
 class FoundationCourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'teacher', 'price')
+    list_display = ('title', 'teacher', 'price', 'video_count')
     search_fields = ('title', 'teacher__name')
+    inlines = [VideoInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "teacher":
             kwargs["queryset"] = Teacher.objects.all()
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "videos":
-            kwargs["queryset"] = Video.objects.all()
-        return super().formfield_for_manytomany(db_field, request, **kwargs)
-
-
+    def video_count(self, obj):
+        return obj.videos.count()
+    video_count.short_description = 'Videolar soni'
 
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
-    list_display = ('title', 'id')
-    search_fields = ('title',)
-    ordering = ('id',)
+    list_display = ('title', 'foundation_course')
+    search_fields = ('title', 'foundation_course__title')

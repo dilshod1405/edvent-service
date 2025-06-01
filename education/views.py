@@ -17,14 +17,11 @@ class FoundationCourseListAPIView(generics.ListAPIView):
     serializer_class = FoundationCourseSerializer
 
     def get_queryset(self):
-        return list(FoundationCourse.objects.select_related('teacher').prefetch_related('videos'))
+        return FoundationCourse.objects.select_related('teacher').prefetch_related('videos')
 
-
-
-class FoundationCourseDetailAPIView(RetrieveAPIView):
-    queryset = FoundationCourse.objects.all()
+class FoundationCourseDetailAPIView(generics.RetrieveAPIView):
+    queryset = FoundationCourse.objects.select_related('teacher').prefetch_related('videos')
     serializer_class = FoundationCourseSerializer
-    lookup_field = 'id'
     
     
 
