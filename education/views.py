@@ -36,12 +36,12 @@ class CourseDetailAPIView(generics.RetrieveAPIView):
 
 
 class SpecialityListAPIView(generics.ListAPIView):
-    queryset = Speciality.objects.all()
+    queryset = Speciality.objects.select_related('teacher').prefetch_related('courses').all()
     serializer_class = SpecialitySerializer
 
 
 class SpecialityDetailAPIView(generics.RetrieveAPIView):
-    queryset = Speciality.objects.all()
+    queryset = Speciality.objects.select_related('teacher').prefetch_related('courses').all()
     serializer_class = SpecialitySerializer
 
 
