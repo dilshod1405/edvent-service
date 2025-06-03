@@ -12,6 +12,8 @@ from rest_framework.generics import ListAPIView
 from .serializers import LessonSerializer, LessonDetailSerializer
 import json
 import requests
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 
 class FoundationCourseListAPIView(generics.ListAPIView):
     serializer_class = FoundationCourseSerializer
@@ -35,14 +37,16 @@ class CourseDetailAPIView(generics.RetrieveAPIView):
     serializer_class = CourseSerializer
 
 
-class SpecialityListAPIView(generics.ListAPIView):
-    queryset = Speciality.objects.select_related('teacher').prefetch_related('courses').all()
-    serializer_class = SpecialitySerializer
-
-
-class SpecialityDetailAPIView(generics.RetrieveAPIView):
-    queryset = Speciality.objects.select_related('teacher').prefetch_related('courses').all()
-    serializer_class = SpecialitySerializer
+class SpecialityAPIView(APIView):
+    def get(self, request, pk=None):
+        if pk is not None:
+            speciality = get_object_or_404(Speciality.objects.prefetch_related('courses'), pk=pk)
+            serializer = SpecialitySerializer(speciality)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            queryset = Speciality.objects.prefetch_related('courses').all()
+            serializer = SpecialitySerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TeacherListAPIView(generics.ListAPIView):

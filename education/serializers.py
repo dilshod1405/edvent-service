@@ -24,11 +24,7 @@ class FoundationCourseSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'photo', 'price', 'teacher', 'videos']
 
 
-# Speciality
-class SpecialitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Speciality
-        fields = ['id', 'title', 'description']
+
 
 # Lesson
 class LessonSerializer(serializers.ModelSerializer):
@@ -44,18 +40,6 @@ class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = ['id', 'title', 'price', 'lessons']
-        
-
-# Course (with nested modules and teacher)
-class CourseSerializer(serializers.ModelSerializer):
-    teacher = TeacherSerializer()
-    speciality = SpecialitySerializer()
-    modules = ModuleSerializer(many=True, read_only=True)
-    support = UserDetailSerializer()
-
-    class Meta:
-        model = Course
-        fields = ['id', 'title', 'description', 'photo', 'duration', 'teacher', 'support', 'speciality', 'modules']
 
 
 # Resource
@@ -70,6 +54,31 @@ class HomeworkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Homework
         fields = ['id', 'description', 'file']
+
+
+class CourseShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'description', 'photo', 'duration']
+
+
+class SpecialitySerializer(serializers.ModelSerializer):
+    courses = CourseShortSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Speciality
+        fields = ['id', 'title', 'description', 'courses']
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    teacher = TeacherSerializer()
+    speciality = SpecialitySerializer()
+    modules = ModuleSerializer(many=True, read_only=True)
+    support = UserDetailSerializer()
+
+    class Meta:
+        model = Course
+        fields = ['id', 'title', 'description', 'photo', 'duration', 'teacher', 'support', 'speciality', 'modules']
 
 
 # Tariff (can be shown per speciality or course)
