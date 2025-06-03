@@ -1,20 +1,26 @@
 from rest_framework import serializers
-from authentication.serializers.user_detail_serializer import UserDetailSerializer
 from .models import (
     Teacher, FoundationCourse, Video, Speciality,
     Course, Module, Lesson, Tariff, Resource, Homework
 )
+from authentication.serializers.user_detail_serializer import UserDetailSerializer
 
+
+# === Teacher ===
 class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ['id', 'name', 'experience', 'profession', 'company', 'logo']
 
+
+# === Video ===
 class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
         fields = ['id', 'title', 'video_id']
 
+
+# === Foundation Course ===
 class FoundationCourseSerializer(serializers.ModelSerializer):
     teacher = TeacherSerializer()
     videos = VideoSerializer(many=True, read_only=True)
@@ -24,16 +30,49 @@ class FoundationCourseSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'photo', 'price', 'teacher', 'videos']
 
 
-
-
-# Lesson
+# === Lesson ===
 class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = ['id', 'title', 'video_id', 'duration']
-        
-        
-# Module
+
+
+class LessonListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = ['id', 'title']
+
+
+class LessonDetailSerializer(serializers.ModelSerializer):
+    module_id = serializers.IntegerField(source='module.id')
+    module_title = serializers.CharField(source='module.title')
+    course_id = serializers.IntegerField(source='module.course.id')
+    course_title = serializers.CharField(source='module.course.title')
+    resources = serializers.SerializerMethodField()
+    homeworks = serializers.SerializerMethodField()
+    module_lessons = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Lesson
+        fields = [
+            'id', 'title', 'description', 'video_id', 'duration',
+            'module_id', 'module_title',
+            'course_id', 'course_title',
+            'resources', 'homeworks', 'module_lessons'
+        ]
+
+    def get_resources(self, obj):
+        return ResourceSerializer(obj.resources.all(), many=True).data
+
+    def get_homeworks(self, obj):
+        return HomeworkSerializer(obj.homeworks.all(), many=True).data
+
+    def get_module_lessons(self, obj):
+        lessons = Lesson.objects.filter(module=obj.module).exclude(id=obj.id)
+        return LessonListSerializer(lessons, many=True).data
+
+
+# === Module ===
 class ModuleSerializer(serializers.ModelSerializer):
     lessons = LessonSerializer(many=True, read_only=True)
 
@@ -42,20 +81,20 @@ class ModuleSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'price', 'lessons']
 
 
-# Resource
+# === Resource / Homework ===
 class ResourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Resource
         fields = ['id', 'title', 'file']
 
 
-# Homework
 class HomeworkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Homework
         fields = ['id', 'description', 'file']
 
 
+# === Course ===
 class CourseShortSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
@@ -73,51 +112,25 @@ class SpecialitySerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     teacher = TeacherSerializer()
     speciality = SpecialitySerializer()
-    modules = ModuleSerializer(many=True, read_only=True)
     support = UserDetailSerializer()
+    modules = ModuleSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
-        fields = ['id', 'title', 'description', 'photo', 'duration', 'teacher', 'support', 'speciality', 'modules']
+        fields = [
+            'id', 'title', 'description', 'photo', 'duration',
+            'teacher', 'support', 'speciality', 'modules'
+        ]
 
 
-# Tariff (can be shown per speciality or course)
+# === Tariff ===
 class TariffSerializer(serializers.ModelSerializer):
     speciality = SpecialitySerializer()
     courses = CourseSerializer(many=True, read_only=True)
 
     class Meta:
         model = Tariff
-        fields = ['id', 'title', 'price', 'discount_percent', 'is_active', 'speciality', 'courses']
-
-
-class LessonListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lesson
-        fields = ['id', 'title']
-        
-        
-class LessonDetailSerializer(serializers.ModelSerializer):
-    module_id = serializers.IntegerField(source='module.id')
-    module_title = serializers.CharField(source='module.title')
-    course_id = serializers.IntegerField(source='module.course.id')
-    course_title = serializers.CharField(source='module.course.title')
-    
-    resources = ResourceSerializer(many=True, read_only=True)
-    homeworks = HomeworkSerializer(many=True, read_only=True)
-    
-    module_lessons = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = Lesson
         fields = [
-            'id', 'title', 'description', 'video_id', 'duration',
-            'module_id', 'module_title',
-            'course_id', 'course_title',
-            'resources', 'homeworks',
-            'module_lessons',
+            'id', 'title', 'price', 'discount_percent', 'is_active',
+            'speciality', 'courses'
         ]
-    
-    def get_module_lessons(self, obj):
-        lessons = Lesson.objects.filter(module=obj.module).exclude(id=obj.id)
-        return LessonListSerializer(lessons, many=True).data
