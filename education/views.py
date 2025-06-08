@@ -16,6 +16,9 @@ from .serializers import (
 )
 import json
 import requests
+from django.db.models import Q
+from rest_framework import permissions
+from payment.models import Transaction
 
 
 # === Foundation Courses ===
@@ -152,3 +155,32 @@ class VdoCipherOTPView(APIView):
         if response.status_code == 200:
             return Response(response.json())
         return Response({"error": "Failed to get OTP", "details": response.json()}, status=response.status_code)
+
+
+# === Get Paid Courses ===
+class PaidCoursesView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CourseSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+
+        # To‘langan modullar orqali kurs ID larni olish
+        paid_course_ids_from_modules = Transaction.objects.filter(
+            user=user,
+            state='paid',
+            module__isnull=False,
+        ).values_list('module__course_id', flat=True)
+
+        # To‘lov qilingan kurslar (agar bevosita kurs bo‘yicha bo‘lsa)
+        paid_course_ids_direct = Transaction.objects.filter(
+            user=user,
+            state='paid',
+            course__isnull=False,
+        ).values_list('course_id', flat=True)
+
+        # Ikkisini birlashtiramiz va takrorlarni olib tashlaymiz
+        paid_course_ids = set(list(paid_course_ids_from_modules) + list(paid_course_ids_direct))
+
+        # Kurslarni filterlaymiz
+        return Course.objects.filter(id__in=paid_course_ids).distinct()

@@ -15,6 +15,7 @@ from .views import (
     LessonDetailView,
     HomeworkListByLessonAPIView,
     ResourceListByLessonAPIView,
+    PaidCoursesView,
 )
 
 urlpatterns = [
@@ -42,4 +43,6 @@ urlpatterns = [
     path('resource/<int:lesson_id>/', ResourceListByLessonAPIView.as_view(), name='resource-by-lesson'),
 
     path('vdocipher/otp/<str:video_id>/', VdoCipherOTPView.as_view(), name='vdocipher-otp'),
+
+    path('user/paid-courses/', PaidCoursesView.as_view(), name='user-paid-courses'),
 ]
