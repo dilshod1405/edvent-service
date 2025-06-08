@@ -2,6 +2,8 @@ from decouple import config
 import os
 from pathlib import Path
 from datetime import timedelta
+import logging
+logging.getLogger("django.security.DisallowedHost").setLevel(logging.CRITICAL)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -183,6 +185,24 @@ AUTH_USER_MODEL = "authentication.User"
 CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
+# Redis bilan aloqani barqaror qilish
+CELERY_BROKER_CONNECTION_RETRY = True
+CELERY_BROKER_CONNECTION_MAX_RETRIES = None  # Cheksiz qayta urinib ko‘rish
+CELERY_BROKER_CONNECTION_TIMEOUT = 30  # Sekundlarda timeout
+
+# Redis pool limit: har bir task uchun yangi ulanish (uzilishlar bo‘lmasligi uchun)
+CELERY_BROKER_POOL_LIMIT = 0
+
+# Taskni boshqa worker ishlamasligi uchun visibility timeout (1 soat)
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 3600,
+}
+
+# Natijalarni qayta ishlash uchun timeout
+CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 3600,
+}
+
 SITE_ID = 1
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
@@ -238,8 +258,7 @@ LOGGING = {
     },
 }
 
-import logging
-logging.getLogger("django.security.DisallowedHost").setLevel(logging.CRITICAL)
+
 
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
