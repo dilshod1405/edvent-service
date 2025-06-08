@@ -80,6 +80,15 @@ class LessonDetailView(generics.RetrieveAPIView):
     serializer_class = LessonDetailSerializer
     permission_classes = [IsAuthenticated]
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = serializer.data
+        module_lessons_qs = Lesson.objects.filter(module=instance.module).values('id', 'title', 'duration').order_by('id')
+        module_lessons = list(module_lessons_qs)
+        data['module_lessons'] = module_lessons
+        return Response(data, status=status.HTTP_200_OK)
+
 
 class LessonSupportAPIView(APIView):
     def get(self, request, lesson_id):
