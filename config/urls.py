@@ -8,6 +8,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
+
 
 swagger_view = SpectacularSwaggerView.as_view(
     permission_classes=[IsAdminUserOnly]
@@ -27,6 +32,7 @@ urlpatterns = [
     path('auth-token/', include('djoser.urls.authtoken')),  # Token-based auth routes
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("health/", health_check),
 
     # OpenAPI schema fayl (admin yoki auth talab qilmaydi odatda)
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

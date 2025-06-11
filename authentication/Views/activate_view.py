@@ -4,7 +4,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import Http404
-from authentication.tasks.successful_registration_email import successful_registration_email
+from authentication.tasks import successful_registration_email
 
 def activate(request, uidb64, token):
     try:

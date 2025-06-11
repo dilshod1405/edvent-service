@@ -8,23 +8,30 @@ services:
       - DJANGO_SETTINGS_MODULE=config.settings.production
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./staticfiles:/app/config/staticfiles
       - ./media:/app/config/media
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     command: ["sh", "/app/entrypoint.sh"]
     networks:
       - archedu-net
       - common-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   db:
     image: postgres:15
-    restart: always
+    restart: unless-stopped
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -36,6 +43,11 @@ services:
     networks:
       - archedu-net
       - common-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nginx:
     image: nginx:alpine
@@ -70,14 +82,17 @@ services:
 
   redis:
     image: redis:7-alpine
-    restart: always
+    restart: unless-stopped
     ports:
       - "6379:6379"
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
     networks:
       - archedu-net
       - common-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   celery:
     build: .
@@ -87,11 +102,19 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - redis
-      - archedu
+      redis:
+        condition: service_healthy
+      archedu:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - archedu-net
       - common-net
+    healthcheck:
+      test: ["CMD", "celery", "-A", "config", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   celery-beat:
     build: .
@@ -103,11 +126,19 @@ services:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
     depends_on:
-      - redis
-      - archedu
+      redis:
+        condition: service_healthy
+      archedu:
+        condition: service_healthy
+    restart: unless-stopped
     networks:
       - archedu-net
       - common-net
+    healthcheck:
+      test: ["CMD", "celery", "-A", "config", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   static_volume:
@@ -121,4 +152,3 @@ networks:
     external: true
   archedu-net:
     driver: bridge
-  
