@@ -15,10 +15,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - db
+      - redis
     command: ["sh", "/app/entrypoint.sh"]
     networks:
       - archedu-net
