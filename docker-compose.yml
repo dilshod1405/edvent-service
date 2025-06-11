@@ -23,8 +23,6 @@ services:
     networks:
       - archedu-net
       - common-net
-    healthcheck:
-      disable: true
 
   db:
     image: postgres:15
@@ -40,11 +38,6 @@ services:
     networks:
       - archedu-net
       - common-net
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   nginx:
     image: nginx:alpine
@@ -85,11 +78,6 @@ services:
     networks:
       - archedu-net
       - common-net
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   celery:
     build: .
@@ -99,19 +87,12 @@ services:
     volumes:
       - .:/app
     depends_on:
-      redis:
-        condition: service_healthy
-      archedu:
-        condition: service_healthy
+      - redis
+      - archedu
     restart: unless-stopped
     networks:
       - archedu-net
       - common-net
-    healthcheck:
-      test: ["CMD", "celery", "-A", "config", "status"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
   celery-beat:
     build: .
@@ -123,19 +104,13 @@ services:
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
     depends_on:
-      redis:
-        condition: service_healthy
-      archedu:
-        condition: service_healthy
+      - redis
+      - archedu
+      - db
     restart: unless-stopped
     networks:
       - archedu-net
       - common-net
-    healthcheck:
-      test: ["CMD", "celery", "-A", "config", "status"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 volumes:
   static_volume:
