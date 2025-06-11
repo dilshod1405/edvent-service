@@ -47,5 +47,5 @@ jobs:
             docker compose down --remove-orphans
             docker compose pull
             docker compose up -d --build
-            docker compose exec web python manage.py alembic upgrade head
+            docker compose exec archedu python manage.py migrate
             docker image prune -f
