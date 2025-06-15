@@ -64,7 +64,7 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c"
     command: >
-      "certbot certonly --webroot -w /var/www/certbot
+      "certbot renew --webroot -w /var/www/certbot
       --email www.edvent.uz@gmail.com --agree-tos --no-eff-email
       -d archedu.uz -d www.archedu.uz --non-interactive"
 
