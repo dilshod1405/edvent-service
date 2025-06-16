@@ -31,3 +31,4 @@ class TransactionCreateAPIView(generics.CreateAPIView):
             "payme_link": pay_link
         }, status=status.HTTP_201_CREATED)
 
+
