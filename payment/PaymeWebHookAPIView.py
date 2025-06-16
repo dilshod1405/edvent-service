@@ -1,4 +1,5 @@
 from payme.views import PaymeWebHookAPIView
+from django.http import JsonResponse
 from .models import Transaction
 
 class PaymeCallBackAPIView(PaymeWebHookAPIView):
@@ -8,59 +9,69 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
         except Transaction.DoesNotExist:
             return None
 
-    # === CheckPerformTransaction ===
     def handle_check_perform_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account'].get('id')
+        transaction_id = params['account']['id']
+        amount = params['amount']  # tiyinlarda
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
             return self.error(-31050, 'Transaction not found')
 
-        if transaction.amount != params['amount'] // 100:
+        if transaction.total_amount != amount:
             return self.error(-31001, 'Incorrect amount')
 
-        return self.result({
-            'allow': True
-        })
+        return self.result({ "allow": True })
 
-    # === CreateTransaction ===
-    def handle_created_payment(self, params, result, *args, **kwargs):
-        transaction_id = params['account'].get('id')
+    def handle_create_transaction(self, params, *args, **kwargs):
+        transaction_id = params['account']['id']
+        payme_transaction_id = params['id']
+        amount = params['amount']
+
         transaction = self.get_transaction(transaction_id)
-
         if not transaction:
             return self.error(-31050, 'Transaction not found')
 
-        transaction.payme_transaction_id = result['transaction']
+        if transaction.total_amount != amount:
+            return self.error(-31001, 'Incorrect amount')
+
+        if transaction.state != 'waiting':
+            return self.error(-31008, 'Transaction already created or in wrong state')
+
+        transaction.payme_transaction_id = payme_transaction_id
         transaction.state = 'waiting'
         transaction.save()
 
         return self.result({
-            "create_time": result['create_time'],
-            "transaction": result['transaction'],
-            "state": 1
+            "create_time": str(transaction.created_at.timestamp() * 1000),
+            "transaction": transaction.id,
+            "state": 1  # waiting
         })
 
-    # === PerformTransaction ===
-    def handle_successfully_payment(self, params, result, *args, **kwargs):
-        transaction_id = params['account'].get('id')
+    def handle_perform_transaction(self, params, *args, **kwargs):
+        transaction_id = params['account']['id']
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
             return self.error(-31050, 'Transaction not found')
+
+        if transaction.state == 'paid':
+            return self.result({
+                "transaction": transaction.id,
+                "perform_time": str(transaction.updated_at.timestamp() * 1000),
+                "state": 2
+            })
 
         transaction.state = 'paid'
         transaction.save()
 
         return self.result({
-            "transaction": result['transaction'],
-            "perform_time": result['perform_time'],
+            "transaction": transaction.id,
+            "perform_time": str(transaction.updated_at.timestamp() * 1000),
             "state": 2
         })
 
-    # === CancelTransaction ===
-    def handle_cancelled_payment(self, params, result, *args, **kwargs):
-        transaction_id = params['account'].get('id')
+    def handle_cancel_transaction(self, params, *args, **kwargs):
+        transaction_id = params['account']['id']
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
@@ -70,41 +81,30 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
         transaction.save()
 
         return self.result({
-            "transaction": result['transaction'],
-            "cancel_time": result['cancel_time'],
+            "transaction": transaction.id,
+            "cancel_time": str(transaction.updated_at.timestamp() * 1000),
             "state": -1
         })
 
-    # === CheckTransaction ===
-    def handle_check_transaction(self, params, result, *args, **kwargs):
-        transaction_id = params['account'].get('id')
+    def handle_check_transaction(self, params, *args, **kwargs):
+        transaction_id = params['account']['id']
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
             return self.error(-31050, 'Transaction not found')
 
         return self.result({
-            "create_time": result.get('create_time', 0),
-            "perform_time": result.get('perform_time', 0),
-            "cancel_time": result.get('cancel_time', 0),
-            "transaction": result['transaction'],
-            "state": self.get_state_code(transaction.state),
-            "reason": None
+            "create_time": str(transaction.created_at.timestamp() * 1000),
+            "perform_time": str(transaction.updated_at.timestamp() * 1000),
+            "cancel_time": None if transaction.state != 'canceled' else str(transaction.updated_at.timestamp() * 1000),
+            "transaction": transaction.id,
+            "state": self.map_state(transaction.state)
         })
 
-    # === GetStatement ===
-    def handle_get_statement(self, params, *args, **kwargs):
-        # For basic implementation, return empty list
-        return self.result({
-            "transactions": []
-        })
-
-    # Helper method to map state
-    def get_state_code(self, state):
+    def map_state(self, state):
         return {
-            'created': 0,
             'waiting': 1,
             'paid': 2,
             'canceled': -1,
-            'failed': -2,
+            'failed': -2
         }.get(state, 0)

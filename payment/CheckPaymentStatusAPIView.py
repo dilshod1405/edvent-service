@@ -1,110 +1,43 @@
-from payme.views import PaymeWebHookAPIView
-from django.http import JsonResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import Transaction
+from education.models import Module, FoundationCourse, Tariff
 
-class PaymeCallBackAPIView(PaymeWebHookAPIView):
-    def get_transaction(self, transaction_id):
-        try:
-            return Transaction.objects.get(id=transaction_id)
-        except Transaction.DoesNotExist:
-            return None
+class CheckPaymentStatusAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def handle_check_perform_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account']['id']
-        amount = params['amount']  # tiyinlarda
-        transaction = self.get_transaction(transaction_id)
+    def get(self, request, *args, **kwargs):
+        module_id = request.query_params.get('module_id')
+        course_id = request.query_params.get('course_id')
+        tariff_id = request.query_params.get('tariff_id')
 
-        if not transaction:
-            return self.error(-31050, 'Transaction not found')
+        if not module_id and not course_id and not tariff_id:
+            return Response({"error": "Either module_id, course_id, or tariff_id is required"}, status=400)
 
-        if transaction.total_amount != amount:
-            return self.error(-31001, 'Incorrect amount')
+        if module_id:
+            try:
+                module = Module.objects.get(id=module_id)
+            except Module.DoesNotExist:
+                return Response({"error": "Module not found"}, status=404)
 
-        return self.result({ "allow": True })
+            transaction = Transaction.objects.filter(user=request.user, module=module, state='paid').first()
+            return Response({"status": "paid" if transaction else "not_paid", "module": module.title})
 
-    def handle_create_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account']['id']
-        payme_transaction_id = params['id']
-        amount = params['amount']
+        if course_id:
+            try:
+                course = FoundationCourse.objects.get(id=course_id)
+            except FoundationCourse.DoesNotExist:
+                return Response({"error": "Course not found"}, status=404)
 
-        transaction = self.get_transaction(transaction_id)
-        if not transaction:
-            return self.error(-31050, 'Transaction not found')
+            transaction = Transaction.objects.filter(user=request.user, course=course, state='paid').first()
+            return Response({"status": "paid" if transaction else "not_paid", "course": course.title})
 
-        if transaction.total_amount != amount:
-            return self.error(-31001, 'Incorrect amount')
+        if tariff_id:
+            try:
+                tariff = Tariff.objects.get(id=tariff_id)
+            except Tariff.DoesNotExist:
+                return Response({"error": "Tariff not found"}, status=404)
 
-        if transaction.state != 'waiting':
-            return self.error(-31008, 'Transaction already created or in wrong state')
-
-        transaction.payme_transaction_id = payme_transaction_id
-        transaction.state = 'waiting'
-        transaction.save()
-
-        return self.result({
-            "create_time": str(transaction.created_at.timestamp() * 1000),
-            "transaction": transaction.id,
-            "state": 1  # waiting
-        })
-
-    def handle_perform_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account']['id']
-        transaction = self.get_transaction(transaction_id)
-
-        if not transaction:
-            return self.error(-31050, 'Transaction not found')
-
-        if transaction.state == 'paid':
-            return self.result({
-                "transaction": transaction.id,
-                "perform_time": str(transaction.updated_at.timestamp() * 1000),
-                "state": 2
-            })
-
-        transaction.state = 'paid'
-        transaction.save()
-
-        return self.result({
-            "transaction": transaction.id,
-            "perform_time": str(transaction.updated_at.timestamp() * 1000),
-            "state": 2
-        })
-
-    def handle_cancel_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account']['id']
-        transaction = self.get_transaction(transaction_id)
-
-        if not transaction:
-            return self.error(-31050, 'Transaction not found')
-
-        transaction.state = 'canceled'
-        transaction.save()
-
-        return self.result({
-            "transaction": transaction.id,
-            "cancel_time": str(transaction.updated_at.timestamp() * 1000),
-            "state": -1
-        })
-
-    def handle_check_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account']['id']
-        transaction = self.get_transaction(transaction_id)
-
-        if not transaction:
-            return self.error(-31050, 'Transaction not found')
-
-        return self.result({
-            "create_time": str(transaction.created_at.timestamp() * 1000),
-            "perform_time": str(transaction.updated_at.timestamp() * 1000),
-            "cancel_time": None if transaction.state != 'canceled' else str(transaction.updated_at.timestamp() * 1000),
-            "transaction": transaction.id,
-            "state": self.map_state(transaction.state)
-        })
-
-    def map_state(self, state):
-        return {
-            'waiting': 1,
-            'paid': 2,
-            'canceled': -1,
-            'failed': -2
-        }.get(state, 0)
+            transaction = Transaction.objects.filter(user=request.user, tariff=tariff, state='paid').first()
+            return Response({"status": "paid" if transaction else "not_paid", "tariff": tariff.title})
