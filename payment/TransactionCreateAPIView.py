@@ -6,27 +6,29 @@ from .models import Transaction
 from .serializers import TransactionSerializer
 from payme import Payme
 
+# TransactionCreateAPIView
 class TransactionCreateAPIView(generics.CreateAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
-        # Create the transaction object first
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         transaction = serializer.save(user=request.user)
 
-        # Generate Payme pay link
+        # ✅ TO‘G‘RILANGAN QATOR
+        amount_in_tiyin = int(transaction.amount * 100)
+
         payme = Payme(settings.PAYME_ID, settings.PAYME_KEY)
         pay_link = payme.initializer.generate_pay_link(
             id=transaction.id,
-            amount=transaction.amount * 10000,  # Payme expects tiyin
+            amount=amount_in_tiyin,
             return_url="https://edvent.uz/api/dashboard/kurslarim"
         )
 
-        # Return both transaction data and payment link
         return Response({
             "transaction": TransactionSerializer(transaction).data,
             "payme_link": pay_link
         }, status=status.HTTP_201_CREATED)
+
