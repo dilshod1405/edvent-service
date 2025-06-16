@@ -1,6 +1,7 @@
 from payme.views import PaymeWebHookAPIView
 from .models import Transaction
 
+# views.py
 class PaymeCallBackAPIView(PaymeWebHookAPIView):
     def get_transaction(self, transaction_id):
         try:
@@ -9,22 +10,22 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
             return None
 
     def handle_check_perform_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account'].get('transaction_id')
-        amount = int(params['amount'])  # 🔧 Fix: cast to int
-        transaction = self.get_transaction(transaction_id)
+        transaction_id = params['account'].get('id')
+        amount = int(params['amount'])
 
+        transaction = self.get_transaction(transaction_id)
         if not transaction:
             return self.error(-31050, 'Transaction not found')
 
         if transaction.total_amount != amount:
             return self.error(-31001, 'Incorrect amount')
 
-        return self.result({ "allow": True })
+        return self.result({"allow": True})
 
     def handle_create_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account'].get('transaction_id')
+        transaction_id = params['account'].get('id')
         payme_transaction_id = params['id']
-        amount = int(params['amount'])  # 🔧 Fix: cast to int
+        amount = int(params['amount'])
 
         transaction = self.get_transaction(transaction_id)
         if not transaction:
@@ -49,7 +50,7 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
         })
 
     def handle_perform_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account'].get('transaction_id')
+        transaction_id = params['account'].get('id')
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
@@ -72,7 +73,7 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
         })
 
     def handle_cancel_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account'].get('transaction_id')
+        transaction_id = params['account'].get('id')
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
@@ -88,7 +89,7 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
         })
 
     def handle_check_transaction(self, params, *args, **kwargs):
-        transaction_id = params['account'].get('transaction_id')
+        transaction_id = params['account'].get('id')
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
