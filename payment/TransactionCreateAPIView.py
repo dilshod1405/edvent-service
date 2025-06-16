@@ -2,10 +2,9 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
-
 from .models import Transaction
 from .serializers import TransactionSerializer
-from payme import Payme  # Siz ishlatayotgan SDK
+from payme import Payme
 
 class TransactionCreateAPIView(generics.CreateAPIView):
     queryset = Transaction.objects.all()
@@ -23,7 +22,7 @@ class TransactionCreateAPIView(generics.CreateAPIView):
         pay_link = payme.initializer.generate_pay_link(
             id=transaction.id,
             amount=transaction.amount * 100,  # Payme expects tiyin
-            return_url="https://edvent.uz"
+            return_url="https://edvent.uz/api/dashboard/kurslarim"
         )
 
         # Return both transaction data and payment link
