@@ -10,7 +10,7 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
 
     def handle_check_perform_transaction(self, params, *args, **kwargs):
         transaction_id = params['account'].get('transaction_id')
-        amount = params['amount']
+        amount = int(params['amount'])  # 🔧 Fix: cast to int
         transaction = self.get_transaction(transaction_id)
 
         if not transaction:
@@ -24,7 +24,7 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
     def handle_create_transaction(self, params, *args, **kwargs):
         transaction_id = params['account'].get('transaction_id')
         payme_transaction_id = params['id']
-        amount = params['amount']
+        amount = int(params['amount'])  # 🔧 Fix: cast to int
 
         transaction = self.get_transaction(transaction_id)
         if not transaction:
