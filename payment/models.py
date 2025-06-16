@@ -21,7 +21,7 @@ class Transaction(models.Model):
     module = models.ForeignKey(Module, on_delete=models.SET_NULL, null=True, blank=True)
     tariff = models.ForeignKey(Tariff, on_delete=models.SET_NULL, null=True, blank=True)
     
-    amount = models.PositiveIntegerField()  # in UZS
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name='Amount (in UZS)')
 
     # REQUIRED by Payme-PKG
     payme_transaction_id = models.CharField(max_length=255, blank=True, null=True)
@@ -33,7 +33,7 @@ class Transaction(models.Model):
 
     @property
     def total_amount(self):
-        return self.amount * 10000  # Payme expects amount in tiyin (UZS * 100)
+        return self.amount * 100
 
     def __str__(self):
         if self.course:
