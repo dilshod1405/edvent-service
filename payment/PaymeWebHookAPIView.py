@@ -17,7 +17,7 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
         if not transaction:
             return self.error(-31050, 'Transaction not found')
 
-        if transaction.total_amount != amount:
+        if transaction.amount != amount:
             return self.error(-31001, 'Incorrect amount')
 
         return self.result({"allow": True})
@@ -31,7 +31,7 @@ class PaymeCallBackAPIView(PaymeWebHookAPIView):
         if not transaction:
             return self.error(-31050, 'Transaction not found')
 
-        if transaction.total_amount != amount:
+        if transaction.amount != amount:
             return self.error(-31001, 'Incorrect amount')
 
         if transaction.state == 'paid':
