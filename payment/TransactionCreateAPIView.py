@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.conf import settings
+from config.settings import base as settings
 from .models import Transaction
 from .serializers import TransactionSerializer
 from payme import Payme
@@ -18,7 +18,7 @@ class TransactionCreateAPIView(generics.CreateAPIView):
         transaction = serializer.save(user=request.user)
 
         # Generate Payme pay link
-        payme = Payme(settings.PAYME_ID)
+        payme = Payme(settings.PAYME_ID, settings.PAYME_KEY)
         pay_link = payme.initializer.generate_pay_link(
             id=transaction.id,
             amount=transaction.amount * 100,  # Payme expects tiyin
