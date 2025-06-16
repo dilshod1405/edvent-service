@@ -33,7 +33,7 @@ class Transaction(models.Model):
 
     @property
     def total_amount(self):
-        return self.amount * 100  # Payme expects amount in tiyin (UZS * 100)
+        return self.amount * 10000  # Payme expects amount in tiyin (UZS * 100)
 
     def __str__(self):
         if self.course:
