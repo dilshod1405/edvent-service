@@ -17,7 +17,6 @@ class TransactionCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         transaction = serializer.save(user=request.user)
 
-        # ✅ TO‘G‘RILANGAN QATOR
         amount_in_tiyin = int(transaction.amount * 100)
 
         payme = Payme(settings.PAYME_ID, settings.PAYME_KEY)

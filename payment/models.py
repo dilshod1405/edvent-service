@@ -31,10 +31,6 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def total_amount(self):
-        return self.amount * 100
-
     def __str__(self):
         if self.course:
             return f"{self.user} - {self.course.title}"
