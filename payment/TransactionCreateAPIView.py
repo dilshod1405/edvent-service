@@ -17,7 +17,7 @@ class TransactionCreateAPIView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         transaction = serializer.save(user=request.user)
 
-        amount_in_tiyin = int(transaction.amount * 100)
+        amount_in_tiyin = int(transaction.amount)
 
         payme = Payme(settings.PAYME_ID, settings.PAYME_KEY)
         pay_link = payme.initializer.generate_pay_link(
