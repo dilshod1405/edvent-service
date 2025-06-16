@@ -21,7 +21,7 @@ class TransactionCreateAPIView(generics.CreateAPIView):
         payme = Payme(settings.PAYME_ID, settings.PAYME_KEY)
         pay_link = payme.initializer.generate_pay_link(
             id=transaction.id,
-            amount=transaction.amount * 100,  # Payme expects tiyin
+            amount=transaction.amount * 10000,  # Payme expects tiyin
             return_url="https://edvent.uz/api/dashboard/kurslarim"
         )
 
